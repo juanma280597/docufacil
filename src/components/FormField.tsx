@@ -1,17 +1,37 @@
-import React from "react";
+import React, { useId } from "react";
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
   helper?: string;
 }
 
-export function TextField({ label, helper, className = "", ...props }: InputProps) {
+export function TextField({
+  label,
+  helper,
+  className = "",
+  id,
+  required,
+  ...props
+}: InputProps) {
+  const generatedId = useId();
+  const fieldId = id ?? generatedId;
+
   return (
     <div>
-      <label className="mb-1.5 block text-sm font-bold text-slate-800">
+      <label
+        htmlFor={fieldId}
+        className="mb-1.5 block text-sm font-bold text-slate-800"
+      >
         {label}
+        {required && (
+          <span className="ml-1 text-red-600" aria-hidden="true">
+            *
+          </span>
+        )}
       </label>
       <input
+        id={fieldId}
+        required={required}
         {...props}
         className={`w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-base text-slate-900 placeholder:text-slate-400 transition hover:border-slate-400 ${className}`}
       />
@@ -29,14 +49,29 @@ export function TextAreaField({
   label,
   helper,
   className = "",
+  id,
+  required,
   ...props
 }: TextAreaProps) {
+  const generatedId = useId();
+  const fieldId = id ?? generatedId;
+
   return (
     <div>
-      <label className="mb-1.5 block text-sm font-bold text-slate-800">
+      <label
+        htmlFor={fieldId}
+        className="mb-1.5 block text-sm font-bold text-slate-800"
+      >
         {label}
+        {required && (
+          <span className="ml-1 text-red-600" aria-hidden="true">
+            *
+          </span>
+        )}
       </label>
       <textarea
+        id={fieldId}
+        required={required}
         {...props}
         className={`w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-base text-slate-900 placeholder:text-slate-400 transition hover:border-slate-400 ${className}`}
       />
@@ -56,14 +91,29 @@ export function SelectField({
   helper,
   children,
   className = "",
+  id,
+  required,
   ...props
 }: SelectProps) {
+  const generatedId = useId();
+  const fieldId = id ?? generatedId;
+
   return (
     <div>
-      <label className="mb-1.5 block text-sm font-bold text-slate-800">
+      <label
+        htmlFor={fieldId}
+        className="mb-1.5 block text-sm font-bold text-slate-800"
+      >
         {label}
+        {required && (
+          <span className="ml-1 text-red-600" aria-hidden="true">
+            *
+          </span>
+        )}
       </label>
       <select
+        id={fieldId}
+        required={required}
         {...props}
         className={`w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-base text-slate-900 transition hover:border-slate-400 ${className}`}
       >

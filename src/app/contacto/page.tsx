@@ -1,8 +1,14 @@
 import type { Metadata } from "next";
 
+const CONTACT_EMAIL =
+  process.env.NEXT_PUBLIC_CONTACT_EMAIL || "contacto@docufacil.pages.dev";
+
 export const metadata: Metadata = {
   title: "Contacto",
   description: "Ponte en contacto con el equipo de DocuFácil.",
+  alternates: {
+    canonical: "/contacto/",
+  },
 };
 
 export default function ContactoPage() {
@@ -17,9 +23,12 @@ export default function ContactoPage() {
 
         <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-5">
           <p className="text-sm font-bold text-slate-900">Correo electrónico</p>
-          <p className="mt-1 text-base font-semibold text-teal-700">
-            contacto@docufacil.pages.dev
-          </p>
+          <a
+            href={`mailto:${CONTACT_EMAIL}`}
+            className="mt-1 inline-block text-base font-semibold text-teal-700 underline decoration-teal-300 underline-offset-4 hover:text-teal-900"
+          >
+            {CONTACT_EMAIL}
+          </a>
           <p className="mt-3 text-xs text-slate-500">
             Nota: Por este medio no brindamos asesoría legal personalizada ni recibimos
             documentación confidencial.

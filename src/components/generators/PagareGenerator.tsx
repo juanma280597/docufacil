@@ -5,22 +5,16 @@ import SplitGeneratorLayout, { WizardStep } from "@/components/SplitGeneratorLay
 import { CheckboxField, SelectField, TextField } from "@/components/FormField";
 import { buildPagarePdf, PagareData } from "@/lib/documentBuilders";
 import { MONEDAS, MonedaCodigo, numeroALetras } from "@/lib/numeroALetras";
-
-const hoy = () => new Date().toISOString().split("T")[0];
-const enUnMes = () => {
-  const d = new Date();
-  d.setMonth(d.getMonth() + 1);
-  return d.toISOString().split("T")[0];
-};
+import { enUnMesLocal, hoyLocal } from "@/lib/date";
 
 const INITIAL_DATA: PagareData = {
   numeroPagare: "1 / 1",
   moneda: "MXN",
   monto: "",
   lugarSuscripcion: "",
-  fechaSuscripcion: hoy(),
+  fechaSuscripcion: hoyLocal(),
   lugarPago: "",
-  fechaVencimiento: enUnMes(),
+  fechaVencimiento: enUnMesLocal(),
   beneficiarioNombre: "",
   deudorNombre: "",
   deudorDomicilio: "",
@@ -36,9 +30,9 @@ const EXAMPLE_DATA: PagareData = {
   moneda: "MXN",
   monto: "15000",
   lugarSuscripcion: "Guadalajara, Jalisco",
-  fechaSuscripcion: hoy(),
+  fechaSuscripcion: hoyLocal(),
   lugarPago: "Guadalajara, Jalisco",
-  fechaVencimiento: enUnMes(),
+  fechaVencimiento: enUnMesLocal(),
   beneficiarioNombre: "Alejandro Morales Vega",
   deudorNombre: "Luis Enrique Castro Navarro",
   deudorDomicilio: "Av. Vallarta 1420, Col. Americana, Guadalajara, Jal.",

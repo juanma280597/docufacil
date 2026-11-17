@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Política de Privacidad",
   description: "Política de Privacidad y manejo de datos de DocuFácil.",
+  alternates: {
+    canonical: "/privacidad/",
+  },
 };
 
 export default function PrivacidadPage() {
@@ -38,8 +42,16 @@ export default function PrivacidadPage() {
               Search Console para analizar el tráfico de forma agregada y mostrar anuncios
               que mantienen la plataforma gratuita. Google, como proveedor asociado, utiliza
               cookies para mostrar anuncios basados en tus visitas anteriores a este u otros
-              sitios web. Puedes inhabilitar la publicidad personalizada desde la
-              Configuración de Anuncios de Google.
+              sitios web. Puedes inhabilitar la publicidad personalizada desde la{" "}
+              <a
+                href="https://adssettings.google.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-teal-700 underline hover:text-teal-900"
+              >
+                Configuración de Anuncios de Google
+              </a>
+              .
             </p>
           </section>
 
@@ -51,7 +63,14 @@ export default function PrivacidadPage() {
               Al no almacenar bases de datos de documentos ni exigir registro de cuentas,
               tus datos desaparecen automáticamente al cerrar o limpiar la pestaña de tu
               navegador. Si tienes dudas sobre esta política, puedes escribirnos a través
-              de nuestra página de contacto.
+              de nuestra{" "}
+              <Link
+                href="/contacto/"
+                className="font-semibold text-teal-700 underline hover:text-teal-900"
+              >
+                página de contacto
+              </Link>
+              .
             </p>
           </section>
         </div>

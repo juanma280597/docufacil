@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -15,6 +16,12 @@ import {
 import { GENERATORS, GeneratorInfo } from "@/lib/catalog";
 import AdSlot from "@/components/AdSlot";
 import ProximamenteBanner from "@/components/ProximamenteBanner";
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: "/",
+  },
+};
 
 const ICON_MAP: Record<GeneratorInfo["icono"], React.ReactNode> = {
   FileSignature: <FileSignature className="h-7 w-7 text-teal-700" />,

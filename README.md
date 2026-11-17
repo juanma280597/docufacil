@@ -24,6 +24,7 @@ Plataforma 100% gratuita y sin backend (`$0` de costo operativo) para generar do
    - `NEXT_PUBLIC_SITE_URL` (tu URL `.pages.dev` o dominio propio)
    - `NEXT_PUBLIC_GSC_VERIFICATION` (código de verificación de Google Search Console)
    - `NEXT_PUBLIC_ADSENSE_CLIENT` (tu `ca-pub-...` de AdSense)
+   - `NEXT_PUBLIC_CONTACT_EMAIL` (correo público de contacto mostrado en `/contacto/`)
 5. Haz clic en **Save and Deploy**. Cada `git push` actualizará el sitio automáticamente gratis.
 
 ---

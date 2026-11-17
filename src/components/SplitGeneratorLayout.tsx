@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { TDocumentDefinitions } from "pdfmake/interfaces";
 import {
@@ -52,10 +52,19 @@ export default function SplitGeneratorLayout({
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [pdfError, setPdfError] = useState<string | null>(null);
+  const activeUrlRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (activeUrlRef.current) {
+        URL.revokeObjectURL(activeUrlRef.current);
+        activeUrlRef.current = null;
+      }
+    };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
-    let previousUrl: string | null = null;
 
     const timer = setTimeout(async () => {
       setIsGenerating(true);
@@ -67,13 +76,11 @@ export default function SplitGeneratorLayout({
           URL.revokeObjectURL(url);
           return;
         }
-        setPdfUrl((prev) => {
-          previousUrl = prev;
-          return url;
-        });
-        if (previousUrl) {
-          URL.revokeObjectURL(previousUrl);
+        if (activeUrlRef.current) {
+          URL.revokeObjectURL(activeUrlRef.current);
         }
+        activeUrlRef.current = url;
+        setPdfUrl(url);
       } catch (err) {
         if (!cancelled) {
           console.error(err);
@@ -94,13 +101,27 @@ export default function SplitGeneratorLayout({
   }, [depValue]);
 
   const handleDownload = async () => {
-    const def = buildPdf();
-    await downloadPdf(def, filename);
+    setPdfError(null);
+    try {
+      const def = buildPdf();
+      await downloadPdf(def, filename);
+    } catch (err) {
+      console.error(err);
+      setPdfError("No se pudo descargar el PDF. Por favor intenta de nuevo.");
+    }
   };
 
   const handlePrint = async () => {
-    const def = buildPdf();
-    await printPdf(def);
+    setPdfError(null);
+    try {
+      const def = buildPdf();
+      await printPdf(def);
+    } catch (err) {
+      console.error(err);
+      setPdfError(
+        "No se pudo abrir la ventana de impresión. Verifica que tu navegador no esté bloqueando ventanas emergentes o usa Descargar PDF."
+      );
+    }
   };
 
   const isFirst = currentStep === 0;
@@ -314,7 +335,7 @@ export default function SplitGeneratorLayout({
               </div>
             </div>
 
-            <div className="relative h-[640px] w-full bg-slate-100">
+            <div className="relative h-[min(640px,calc(100vh-12rem))] min-h-[420px] w-full bg-slate-100">
               {pdfError ? (
                 <div className="flex h-full flex-col items-center justify-center p-6 text-center">
                   <p className="text-sm text-slate-600">{pdfError}</p>

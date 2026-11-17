@@ -2,10 +2,11 @@ import type { TDocumentDefinitions } from "pdfmake/interfaces";
 
 type PdfMakeInstance = {
   vfs?: Record<string, string>;
+  addVirtualFileSystem?: (vfs: Record<string, string>) => void;
   createPdf: (docDefinition: TDocumentDefinitions) => {
-    getBlob: (cb: (blob: Blob) => void) => void;
-    download: (filename?: string) => void;
-    print: () => void;
+    getBlob: () => Promise<Blob>;
+    download: (filename?: string) => Promise<void>;
+    print: () => Promise<void>;
   };
 };
 
@@ -23,19 +24,31 @@ export async function getPdfMake(): Promise<PdfMakeInstance> {
 
       const pdfMake = (pdfMakeModule.default ?? pdfMakeModule) as unknown as PdfMakeInstance;
       const fontsAny = pdfFontsModule as unknown as {
-        default?: { pdfMake?: { vfs?: Record<string, string> }; vfs?: Record<string, string> };
+        default?: {
+          pdfMake?: { vfs?: Record<string, string> };
+          vfs?: Record<string, string>;
+        } & Record<string, unknown>;
         pdfMake?: { vfs?: Record<string, string> };
         vfs?: Record<string, string>;
-      };
+      } & Record<string, unknown>;
 
       const vfs =
         fontsAny.default?.pdfMake?.vfs ??
         fontsAny.default?.vfs ??
         fontsAny.pdfMake?.vfs ??
-        fontsAny.vfs;
+        fontsAny.vfs ??
+        (fontsAny.default && "Roboto-Regular.ttf" in fontsAny.default
+          ? (fontsAny.default as Record<string, string>)
+          : "Roboto-Regular.ttf" in fontsAny
+            ? (fontsAny as unknown as Record<string, string>)
+            : undefined);
 
       if (vfs) {
-        pdfMake.vfs = vfs;
+        if (typeof pdfMake.addVirtualFileSystem === "function") {
+          pdfMake.addVirtualFileSystem(vfs);
+        } else {
+          pdfMake.vfs = vfs;
+        }
       }
 
       return pdfMake;
@@ -49,17 +62,8 @@ export async function generatePdfBlobUrl(
   docDefinition: TDocumentDefinitions
 ): Promise<string> {
   const pdfMake = await getPdfMake();
-  return new Promise((resolve, reject) => {
-    try {
-      const pdfDocGenerator = pdfMake.createPdf(docDefinition);
-      pdfDocGenerator.getBlob((blob: Blob) => {
-        const url = URL.createObjectURL(blob);
-        resolve(url);
-      });
-    } catch (error) {
-      reject(error);
-    }
-  });
+  const blob = await pdfMake.createPdf(docDefinition).getBlob();
+  return URL.createObjectURL(blob);
 }
 
 export async function downloadPdf(
@@ -67,12 +71,12 @@ export async function downloadPdf(
   filename: string
 ): Promise<void> {
   const pdfMake = await getPdfMake();
-  pdfMake.createPdf(docDefinition).download(filename);
+  await pdfMake.createPdf(docDefinition).download(filename);
 }
 
 export async function printPdf(
   docDefinition: TDocumentDefinitions
 ): Promise<void> {
   const pdfMake = await getPdfMake();
-  pdfMake.createPdf(docDefinition).print();
+  await pdfMake.createPdf(docDefinition).print();
 }

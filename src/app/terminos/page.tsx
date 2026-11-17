@@ -3,6 +3,9 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Términos de Uso y Descargo Legal",
   description: "Condiciones de uso y descargo de responsabilidad legal de DocuFácil.",
+  alternates: {
+    canonical: "/terminos/",
+  },
 };
 
 export default function TerminosPage() {

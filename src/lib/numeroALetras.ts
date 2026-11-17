@@ -215,7 +215,16 @@ function millones(num: number): string {
   const cientos = Math.floor(num / divisor);
   const resto = num - cientos * divisor;
 
-  const strMillones = seccion(num, divisor, "UN MILLÓN", "MILLONES");
+  let strMillones = "";
+  if (cientos > 0) {
+    if (cientos > 1) {
+      const prefijo =
+        cientos >= 1000 ? miles(cientos).trim() : centenas(cientos).trim();
+      strMillones = `${prefijo} MILLONES`;
+    } else {
+      strMillones = "UN MILLÓN";
+    }
+  }
   const strMiles = miles(resto).trim();
 
   if (strMillones === "") return strMiles;
@@ -227,10 +236,11 @@ export function numeroALetras(
   moneda: MonedaCodigo = "MXN"
 ): string {
   const num = typeof cantidad === "string" ? parseFloat(cantidad) : cantidad;
-  if (isNaN(num) || num < 0) return "";
+  if (!Number.isFinite(num) || num < 0) return "";
 
-  const enteros = Math.floor(num);
-  const centavos = Math.round((num - enteros) * 100);
+  const totalCentavos = Math.round(num * 100);
+  const enteros = Math.floor(totalCentavos / 100);
+  const centavos = totalCentavos % 100;
   const centavosStr = centavos.toString().padStart(2, "0");
 
   const infoMoneda = MONEDAS[moneda] || MONEDAS.MXN;
@@ -244,7 +254,10 @@ export function numeroALetras(
     textoEntero = millones(enteros);
   }
 
-  return `${textoEntero} ${etiquetaMoneda} ${centavosStr}/100 ${infoMoneda.sufijo}`.replace(
+  const conectorDe =
+    enteros >= 1_000_000 && enteros % 1_000_000 === 0 ? "DE " : "";
+
+  return `${textoEntero} ${conectorDe}${etiquetaMoneda} ${centavosStr}/100 ${infoMoneda.sufijo}`.replace(
     /\s+/g,
     " "
   );

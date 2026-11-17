@@ -6,8 +6,7 @@ import SplitGeneratorLayout, { WizardStep } from "@/components/SplitGeneratorLay
 import { CheckboxField, SelectField, TextField } from "@/components/FormField";
 import { buildFichaRfcPdf, FichaRfcData } from "@/lib/documentBuilders";
 import { calcularRFC } from "@/lib/rfc";
-
-const hoy = () => new Date().toISOString().split("T")[0];
+import { hoyLocal } from "@/lib/date";
 
 interface RfcFormState {
   nombre: string;
@@ -36,7 +35,7 @@ const INITIAL_STATE: RfcFormState = {
   telefono: "",
   correo: "",
   regimenSugerido: "Sueldos y Salarios e Ingresos Asimilados a Salarios",
-  fechaEmision: hoy(),
+  fechaEmision: hoyLocal(),
 };
 
 const EXAMPLE_STATE: RfcFormState = {
@@ -51,7 +50,7 @@ const EXAMPLE_STATE: RfcFormState = {
   telefono: "222 123 4567",
   correo: "carlos.hernandez@ejemplo.com",
   regimenSugerido: "Sueldos y Salarios e Ingresos Asimilados a Salarios",
-  fechaEmision: hoy(),
+  fechaEmision: hoyLocal(),
 };
 
 export default function CalculadoraRfcGenerator() {
@@ -73,17 +72,25 @@ export default function CalculadoraRfcGenerator() {
 
   const rfcMostrado = useMemo(() => {
     if (!resultado.esValido) return "";
-    if (state.usarHomoclaveManual && state.homoclaveManual.trim().length > 0) {
-      return `${resultado.rfc10}${state.homoclaveManual.toUpperCase().trim()}`;
+    const homoclaveLimpia = state.homoclaveManual
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, "")
+      .trim();
+    if (state.usarHomoclaveManual && homoclaveLimpia.length > 0) {
+      return `${resultado.rfc10}${homoclaveLimpia}`;
     }
     return resultado.rfcCompleto;
   }, [resultado, state.usarHomoclaveManual, state.homoclaveManual]);
 
   const copyRfc = async () => {
     if (!rfcMostrado) return;
-    await navigator.clipboard.writeText(rfcMostrado);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    try {
+      await navigator.clipboard.writeText(rfcMostrado);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("No se pudo copiar el RFC al portapapeles:", err);
+    }
   };
 
   const pdfData: FichaRfcData = {
@@ -183,7 +190,12 @@ export default function CalculadoraRfcGenerator() {
               maxLength={3}
               placeholder="Ej: 9A2"
               value={state.homoclaveManual}
-              onChange={(e) => update("homoclaveManual", e.target.value.toUpperCase())}
+              onChange={(e) =>
+                update(
+                  "homoclaveManual",
+                  e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "")
+                )
+              }
             />
           )}
           <TextField

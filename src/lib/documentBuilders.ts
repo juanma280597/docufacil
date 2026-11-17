@@ -37,7 +37,10 @@ export interface CartaPoderData {
 
 export function buildCartaPoderPdf(d: CartaPoderData): TDocumentDefinitions {
   const fechaTexto = formatearFechaLarga(d.fecha);
-  const lugar = d.ciudadEstado || "[Ciudad, Estado/Departamento]";
+  const ciudad = d.ciudadEstado.trim();
+  const pais = d.pais.trim();
+  const lugarBase = ciudad || "[Ciudad, Estado/Departamento]";
+  const lugar = pais ? `${lugarBase}, ${pais}` : lugarBase;
   const otorgante = d.otorganteNombre || "[NOMBRE COMPLETO DEL OTORGANTE]";
   const apoderado = d.apoderadoNombre || "[NOMBRE COMPLETO DEL APODERADO]";
   const dirigido = d.dirigidoA || "A QUIEN CORRESPONDA";
@@ -272,7 +275,7 @@ export function buildArrendamientoPdf(d: ArrendamientoData): TDocumentDefinition
         margin: [0, 0, 0, 4],
       },
       {
-        text: `(${d.tipoInmueble || "Casa Habitación / Departamento"})`,
+        text: `(${d.tipoInmueble || "Casa Habitación"})`,
         fontSize: 10.5,
         alignment: "center",
         color: "#475569",
@@ -283,6 +286,7 @@ export function buildArrendamientoPdf(d: ArrendamientoData): TDocumentDefinition
           "Contrato de Arrendamiento que celebran, por una parte, ",
           { text: arrendador, bold: true },
           d.arrendadorId ? ` (ID: ${d.arrendadorId})` : "",
+          d.arrendadorDomicilio ? `, con domicilio en ${d.arrendadorDomicilio}` : "",
           ", a quien en lo sucesivo se le denominará ",
           { text: '"EL ARRENDADOR"', bold: true },
           ", y por la otra parte, ",
@@ -303,8 +307,18 @@ export function buildArrendamientoPdf(d: ArrendamientoData): TDocumentDefinition
           { text: "PRIMERA (OBJETO). ", bold: true },
           "EL ARRENDADOR da en arrendamiento a EL ARRENDATARIO el inmueble ubicado en: ",
           { text: inmueble, bold: true },
-          `, para ser destinado única y exclusivamente a `,
-          { text: d.usoInmueble || "uso habitacional", bold: true },
+          ", para ser destinado única y exclusivamente a ",
+          {
+            text:
+              d.tipoInmueble === "Local Comercial"
+                ? d.usoInmueble && !d.usoInmueble.includes("habitacional")
+                  ? d.usoInmueble
+                  : "uso comercial"
+                : d.usoInmueble
+                ? d.usoInmueble.replace(/^uso\s+exclusivamente\s+/i, "uso ")
+                : "uso habitacional",
+            bold: true,
+          },
           ". Queda prohibido subarrendar o ceder los derechos del presente contrato sin autorización previa y por escrito de EL ARRENDADOR.",
         ],
         fontSize: 10,
@@ -862,9 +876,18 @@ export function buildFichaRfcPdf(d: FichaRfcData): TDocumentDefinitions {
     .join(" ")
     .toUpperCase() || "[NOMBRE COMPLETO DEL TRABAJADOR]";
 
-  const rfcFinal = d.usarHomoclaveManual && d.homoclaveManual.trim().length >= 2
-    ? `${d.rfcCalculado.slice(0, 10)}${d.homoclaveManual.toUpperCase().trim()}`
-    : d.rfcCalculado || "XXXX000000XXX";
+  const homoclaveLimpia = d.homoclaveManual
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, "")
+    .trim();
+  const baseRfc =
+    d.rfcCalculado && d.rfcCalculado.length >= 10
+      ? d.rfcCalculado.slice(0, 10)
+      : "XXXX000000";
+  const rfcFinal =
+    d.usarHomoclaveManual && homoclaveLimpia.length > 0
+      ? `${baseRfc}${homoclaveLimpia}`
+      : d.rfcCalculado || "XXXX000000XXX";
 
   return {
     pageSize: "LETTER",
@@ -901,9 +924,10 @@ export function buildFichaRfcPdf(d: FichaRfcData): TDocumentDefinitions {
                   { text: "REGISTRO FEDERAL DE CONTRIBUYENTES (RFC)", fontSize: 9, bold: true, color: "#0f766e", alignment: "center" },
                   { text: rfcFinal, fontSize: 24, bold: true, color: "#0f172a", alignment: "center", margin: [0, 6, 0, 4], characterSpacing: 2 },
                   {
-                    text: d.usarHomoclaveManual
-                      ? "Homoclave ingresada por el titular"
-                      : "Calculado conforme al algoritmo oficial vigente",
+                    text:
+                      d.usarHomoclaveManual && homoclaveLimpia.length > 0
+                        ? "Homoclave ingresada por el titular"
+                        : "Calculado conforme al algoritmo oficial vigente",
                     fontSize: 8.5,
                     color: "#64748b",
                     alignment: "center",

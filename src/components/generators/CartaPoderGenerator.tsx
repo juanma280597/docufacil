@@ -4,13 +4,12 @@ import { useState } from "react";
 import SplitGeneratorLayout, { WizardStep } from "@/components/SplitGeneratorLayout";
 import { CheckboxField, SelectField, TextAreaField, TextField } from "@/components/FormField";
 import { buildCartaPoderPdf, CartaPoderData } from "@/lib/documentBuilders";
-
-const hoy = () => new Date().toISOString().split("T")[0];
+import { hoyLocal } from "@/lib/date";
 
 const INITIAL_DATA: CartaPoderData = {
   pais: "México",
   ciudadEstado: "",
-  fecha: hoy(),
+  fecha: hoyLocal(),
   dirigidoA: "A QUIEN CORRESPONDA",
   otorganteNombre: "",
   otorganteIdentificacion: "",
@@ -28,7 +27,7 @@ const INITIAL_DATA: CartaPoderData = {
 const EXAMPLE_DATA: CartaPoderData = {
   pais: "México",
   ciudadEstado: "Ciudad de México",
-  fecha: hoy(),
+  fecha: hoyLocal(),
   dirigidoA: "A QUIEN CORRESPONDA / DIRECCIÓN DE SERVICIOS ESCOLARES",
   otorganteNombre: "María Fernanda López García",
   otorganteIdentificacion: "INE 1234567890123",

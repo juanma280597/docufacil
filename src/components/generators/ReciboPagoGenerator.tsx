@@ -5,13 +5,12 @@ import SplitGeneratorLayout, { WizardStep } from "@/components/SplitGeneratorLay
 import { SelectField, TextAreaField, TextField } from "@/components/FormField";
 import { buildReciboPdf, ReciboData } from "@/lib/documentBuilders";
 import { MONEDAS, MonedaCodigo, numeroALetras } from "@/lib/numeroALetras";
-
-const hoy = () => new Date().toISOString().split("T")[0];
+import { hoyLocal } from "@/lib/date";
 
 const INITIAL_DATA: ReciboData = {
   tipoRecibo: "Recibo de Pago",
   folio: "001",
-  fecha: hoy(),
+  fecha: hoyLocal(),
   ciudad: "",
   moneda: "MXN",
   monto: "",
@@ -25,7 +24,7 @@ const INITIAL_DATA: ReciboData = {
 const EXAMPLE_DATA: ReciboData = {
   tipoRecibo: "Recibo de Arrendamiento",
   folio: "014",
-  fecha: hoy(),
+  fecha: hoyLocal(),
   ciudad: "Ciudad de México",
   moneda: "MXN",
   monto: "7500",

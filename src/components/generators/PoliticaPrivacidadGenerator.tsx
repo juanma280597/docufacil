@@ -9,8 +9,7 @@ import {
   buildPoliticaPrivacidadText,
   PoliticaPrivacidadData,
 } from "@/lib/documentBuilders";
-
-const hoy = () => new Date().toISOString().split("T")[0];
+import { hoyLocal } from "@/lib/date";
 
 const INITIAL_DATA: PoliticaPrivacidadData = {
   nombreSitio: "",
@@ -18,7 +17,7 @@ const INITIAL_DATA: PoliticaPrivacidadData = {
   responsableNombre: "",
   correoContacto: "",
   pais: "México",
-  fechaActualizacion: hoy(),
+  fechaActualizacion: hoyLocal(),
   recopilaNombreCorreo: true,
   usaCookies: true,
   usaAdsenseAnalytics: true,
@@ -30,7 +29,7 @@ const EXAMPLE_DATA: PoliticaPrivacidadData = {
   responsableNombre: "Ana Laura Gómez / Tienda Artesanal MX",
   correoContacto: "contacto@tiendaartesanal.com",
   pais: "México",
-  fechaActualizacion: hoy(),
+  fechaActualizacion: hoyLocal(),
   recopilaNombreCorreo: true,
   usaCookies: true,
   usaAdsenseAnalytics: true,
@@ -49,9 +48,13 @@ export default function PoliticaPrivacidadGenerator() {
 
   const handleCopyText = async () => {
     const text = buildPoliticaPrivacidadText(data);
-    await navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2500);
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    } catch (err) {
+      console.error("No se pudo copiar al portapapeles:", err);
+    }
   };
 
   const steps: WizardStep[] = [

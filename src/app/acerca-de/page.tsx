@@ -4,6 +4,9 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Acerca de DocuFácil",
   description: "Conoce la misión de DocuFácil: hacer los documentos cotidianos accesibles para todos.",
+  alternates: {
+    canonical: "/acerca-de/",
+  },
 };
 
 export default function AcercaDePage() {

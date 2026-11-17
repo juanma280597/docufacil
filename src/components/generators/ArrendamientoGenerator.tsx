@@ -5,26 +5,25 @@ import SplitGeneratorLayout, { WizardStep } from "@/components/SplitGeneratorLay
 import { CheckboxField, SelectField, TextField } from "@/components/FormField";
 import { ArrendamientoData, buildArrendamientoPdf } from "@/lib/documentBuilders";
 import { MONEDAS, MonedaCodigo } from "@/lib/numeroALetras";
-
-const hoy = () => new Date().toISOString().split("T")[0];
+import { hoyLocal } from "@/lib/date";
 
 const INITIAL_DATA: ArrendamientoData = {
   pais: "México",
   ciudadEstado: "",
-  fechaFirma: hoy(),
+  fechaFirma: hoyLocal(),
   arrendadorNombre: "",
   arrendadorId: "",
   arrendadorDomicilio: "",
   arrendatarioNombre: "",
   arrendatarioId: "",
   inmuebleDireccion: "",
-  tipoInmueble: "Casa Habitación / Departamento",
-  usoInmueble: "uso exclusivamente habitacional",
+  tipoInmueble: "Casa Habitación",
+  usoInmueble: "uso habitacional",
   moneda: "MXN",
   rentaMensual: "",
   depositoGarantia: "",
   diaPago: "5",
-  fechaInicio: hoy(),
+  fechaInicio: hoyLocal(),
   duracionMeses: "12",
   serviciosIncluidos: "",
   permiteMascotas: false,
@@ -33,7 +32,7 @@ const INITIAL_DATA: ArrendamientoData = {
 const EXAMPLE_DATA: ArrendamientoData = {
   pais: "México",
   ciudadEstado: "Monterrey, Nuevo León",
-  fechaFirma: hoy(),
+  fechaFirma: hoyLocal(),
   arrendadorNombre: "Roberto Carlos Garza Treviño",
   arrendadorId: "INE 4455667788990",
   arrendadorDomicilio: "Av. Constitución 1200, Monterrey, N.L.",
@@ -41,12 +40,12 @@ const EXAMPLE_DATA: ArrendamientoData = {
   arrendatarioId: "INE 1122334455667",
   inmuebleDireccion: "Calle Nogal 34, Depto 4B, Col. Del Valle, San Pedro Garza García, N.L.",
   tipoInmueble: "Departamento",
-  usoInmueble: "uso exclusivamente habitacional",
+  usoInmueble: "uso habitacional",
   moneda: "MXN",
   rentaMensual: "8500",
   depositoGarantia: "8500",
   diaPago: "5",
-  fechaInicio: hoy(),
+  fechaInicio: hoyLocal(),
   duracionMeses: "12",
   serviciosIncluidos: "Agua y mantenimiento básico",
   permiteMascotas: false,
@@ -102,6 +101,12 @@ export default function ArrendamientoGenerator() {
             onChange={(e) => update("arrendadorId", e.target.value)}
           />
           <TextField
+            label="Domicilio del Dueño (Opcional)"
+            placeholder="Ej: Av. Constitución 1200, Monterrey, N.L."
+            value={data.arrendadorDomicilio}
+            onChange={(e) => update("arrendadorDomicilio", e.target.value)}
+          />
+          <TextField
             label="Nombre del Inquilino (Arrendatario)"
             placeholder="Ej: Sofía Mendoza Ríos"
             value={data.arrendatarioNombre}
@@ -132,7 +137,15 @@ export default function ArrendamientoGenerator() {
             <SelectField
               label="Tipo de inmueble"
               value={data.tipoInmueble}
-              onChange={(e) => update("tipoInmueble", e.target.value)}
+              onChange={(e) => {
+                const tipo = e.target.value;
+                setData((prev) => ({
+                  ...prev,
+                  tipoInmueble: tipo,
+                  usoInmueble:
+                    tipo === "Local Comercial" ? "uso comercial" : "uso habitacional",
+                }));
+              }}
             >
               <option value="Casa Habitación">Casa Habitación</option>
               <option value="Departamento">Departamento</option>
