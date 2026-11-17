@@ -1,36 +1,37 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DocuFácil — Generadores de Documentos Legales, Contratos y RFC en PDF
 
-## Getting Started
+Plataforma 100% gratuita y sin backend (`$0` de costo operativo) para generar documentos cotidianos en México y Latinoamérica directamente en el navegador con vista previa en vivo y exportación a PDF.
 
-First, run the development server:
+## Documentos incluidos
+1. **Carta Poder Simple** (`/carta-poder/`)
+2. **Calculadora de RFC y Ficha para Trabajo** (`/calculadora-rfc/`)
+3. **Contrato de Arrendamiento Básico** (`/contrato-arrendamiento/`)
+4. **Pagaré Legal con monto en letra** (`/pagare/`)
+5. **Recibo de Pago / Honorarios / Renta** (`/recibo-pago/`)
+6. **Política de Privacidad para Sitios Web** (`/politica-privacidad/`)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Despliegue Gratis en Cloudflare Pages (2 clics desde GitHub)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Entra a [Cloudflare Dashboard](https://dash.cloudflare.com/) -> **Workers & Pages** -> **Create** -> **Pages** -> **Connect to Git**.
+2. Selecciona tu repositorio `docufacil`.
+3. En la configuración del build pon:
+   - **Framework preset**: `Next.js (Static HTML Export)`
+   - **Build command**: `npm run build`
+   - **Build output directory**: `out`
+4. (Opcional) Agrega las variables de entorno en **Settings -> Environment variables**:
+   - `NEXT_PUBLIC_SITE_URL` (tu URL `.pages.dev` o dominio propio)
+   - `NEXT_PUBLIC_GSC_VERIFICATION` (código de verificación de Google Search Console)
+   - `NEXT_PUBLIC_ADSENSE_CLIENT` (tu `ca-pub-...` de AdSense)
+5. Haz clic en **Save and Deploy**. Cada `git push` actualizará el sitio automáticamente gratis.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## Conectar Google Search Console para ver el tráfico
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Entra a [Google Search Console](https://search.google.com/search-console) y agrega tu propiedad (por **Prefijo de URL**, ej. `https://docufacil.pages.dev`).
+2. Elige el método de verificación **Etiqueta HTML**, copia únicamente el código dentro de `content="..."`, pégalo en la variable `NEXT_PUBLIC_GSC_VERIFICATION` en Cloudflare Pages y redespliega.
+3. Una vez verificado, entra al menú **Sitemaps** en Google Search Console y envía:
+   - `sitemap.xml`
+4. En pocos días empezarás a ver impresiones, clics y palabras clave por las que te encuentran.
